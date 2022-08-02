@@ -36,3 +36,4 @@ The page was styled so that it could fit in multiple device size (phone, tablet,
 
 ## Links to screenshots of deployed application
 ￼￼
+    https://github.com/DalPenny/codequiz/blob/main/quiz.jpg
