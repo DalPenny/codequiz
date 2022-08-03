@@ -9,28 +9,28 @@ var start = document.querySelector("#start");
 var response = document.querySelector("#response");
 
 // All Questions, choices and answers put into arrays
-var questionList = 
+var questionList = [
+    {
+        title: "Commonly used data types do NOT include:",
+        choice: ["1. strings", "2. booleans", "3. numbers", "4. alerts"],
+        answer: "4. alerts"
+    },
+    {
+        title: "When being assigned to variables, string values must be enclosed within ____.",
+        choice: ["1. commas", "2. colons", "3. quotes", "4. hashtags"],
+        answer: "3. quotes"
+    },
 
-     ["Commonly used data types do NOT include:",
-    "When being assigned to variables, string values must be enclosed within ____.", 
-    "Arrays in JavaScript can be used to store _____."]
+    {
+        title: "Arrays in JavaScript can be used to store _____.",
+        choice: ["1. numbers", "2. characters", "3. booleans", "4. all of the above"],
+        answer: "4. all of the above",
+    }
 
-var choiceList = 
-     ['"1. strings", "2. booleans", "3. numbers", "4. alerts"',
-    '"1. commas", "2. colons", "3. quotes", "4. hashtags"',
-    '"1. numbers", "2. characters", "3. booleans", "4. all of the above"']
-
-var answerList =
-    ["4. alerts",
-    "3. quotes",
-    "4. all of the above"]
-    
+]; 
 
 // Variables for question loop functions
-var start = document.getElementById("start");
-var choiceList = [];
-var curChoice = 0;
-var curQuestion = 0;
+var curQuestionIndex = 0;
 var score = 0;
 var timeLeft = 31;
 var inProgress = false;
@@ -44,6 +44,7 @@ var correct = false;
 function begin() {
     start.addEventListener("click", questionLoop);
     prevScores.addEventListener("click", displayScores);
+   
 }
 
 //shows the questions and the choices in a loop
@@ -52,16 +53,31 @@ function questionLoop () {
     inProgress = true;
     start.setAttribute("style", "display: none");
     mainBody.setAttribute("style", "display: none");
-    var questionNum = 0;
-    while (questionNum < 3) {
-        questionList.push(question);
-            var choice = document.createElement("button");
-            mainSection.appendChild(choice);
-            choiceList.push(choice);
-            choice.setAttribute("id", 'button${i}');
-            questionNum = questionNum  + 1
+    
+  
+    while (curQuestionIndex < questionList.length) {
+        // get current question object from array
+            var curQuestion = questionList[curQuestionIndex];
+        // update title with current question
+            var heading = document.getElementById("heading");
+            heading.textContent = curQuestion.title;
+
+            var choiceIndex = 0
+            while (choiceIndex < questionList[curQuestionIndex].choice.length) {
+                var choiceList = document.createElement("button");
+                var curChoice = questionList[curQuestionIndex].choice;
+               
+                choiceList.textContent = curChoice[choiceIndex];
+
+                mainSection.appendChild(choiceList);
+                
+                choiceIndex = choiceIndex + 1;
+
+                }
+            curQuestionIndex = curQuestionIndex  + 1;
+            
+            nextQuestion();
         }
-    nextQuestion();
     }
 
 // Timer Countdown and end the quiz if time is zero
@@ -78,7 +94,7 @@ function runTimer () {
     }, 1000)
 }
 
-// verifys if  at the last question
+// verifys if at the last question
 // then goes to either next question or end the quiz
 function nextQuestion(event) {
     writeResponse(event);
