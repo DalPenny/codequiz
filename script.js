@@ -8,6 +8,15 @@ var mainBody = document.querySelector("#mainBody");
 var start = document.querySelector("#start");
 var response = document.querySelector("#response");
 
+var choiceList= [
+    document.querySelector ("button1"),
+    document.querySelector ("button2"),
+    document.querySelector ("button3"),
+    document.querySelector ("button4"),
+
+]
+
+
 // All Questions, choices and answers put into arrays
 var questionList = [
     {
@@ -44,7 +53,6 @@ var correct = false;
 function begin() {
     start.addEventListener("click", questionLoop);
     prevScores.addEventListener("click", displayScores);
-   
 }
 
 //shows the questions and the choices in a loop
@@ -63,9 +71,12 @@ function questionLoop () {
             heading.textContent = curQuestion.title;
 
             var choiceIndex = 0
-            while (choiceIndex < questionList[curQuestionIndex].choice.length) {
+           // while (choiceIndex < questionList[curQuestionIndex].choice.length) {
+            while (choiceIndex < curQuestion.choice.length) {
                 var choiceList = document.createElement("button");
-                var curChoice = questionList[curQuestionIndex].choice;
+                //var curChoice = questionList[curQuestionIndex].choice;
+                var curChoice = curQuestion.choice;
+                var curAnswer = curQuestion.answer;
                
                 choiceList.textContent = curChoice[choiceIndex];
 
@@ -76,7 +87,11 @@ function questionLoop () {
                 }
             curQuestionIndex = curQuestionIndex  + 1;
             
-            nextQuestion();
+            choiceList.addEventListener("click", validateAns());
+            //nextQuestion();
+            //validateAns();
+            var curChoice = 0
+            var curQuestion = 0
         }
     }
 
@@ -96,20 +111,22 @@ function runTimer () {
 
 // verifys if at the last question
 // then goes to either next question or end the quiz
-function nextQuestion(event) {
+//function nextQuestion(event) {
+function validateAns(event) {
     writeResponse(event);
-    if(curQuestion < questionList.length) {
-        changeQuestion();
-    } else {
+    if(curQuestionIndex < questionList.length) {
+         changeQuestion();
+     } else {
         endOfQuiz();
     }
 }
 
 // Checks if at the first question 
-// if not checks response from the previous question is correct
+// if not, checks response from the previous question is correct
 function writeResponse(event) {
     if(event !== undefined) {
-        if(event.currentTarget.textContent === questionList[curQuestion - 1].response) {
+        if(event.currentTarget.textContent === curAnswer) {
+        //if(event.currentTarget.textContent === questionList[curQuestion - 1].response) {
             correct = true;
             response.textContent = "Correct";
             response.setAttribute("style", "color: green");
@@ -142,24 +159,17 @@ function clearResponse() {
     }
 }
 
-var choiceList= [
-    document.getElementById ("button1"),
-    document.getElementById ("button2"),
-    document.getElementById ("button3"),
-    document.getElementById ("button4"),
-
-]
-
 // Changes the question
 // Changes the choices
-function changeQuestion() {
-    heading.textContent = questionList[curQuestion].question;
-    for(var i = 0; i < questionList[curQuestion].length; i++) {
-        choiceList[i].textContent = choiceList[curChoice].choice[i];        
-        choiceList[i].addEventListener("click", nextQuestion);
-    }
-    curQuestion++;
-}
+// function changeQuestion() {
+//     //heading.textContent = questionList[curQuestion].question;
+//     for(var i = 0; i < questionList[curQuestion].length; i++) {
+//         choiceList[i].textContent = choiceList[curChoice].choice[i];        
+//         //choiceList[i].addEventListener("click", nextQuestion);
+//         choiceList[i].addEventListener("click", validateAns);
+//     }
+//     curQuestion++;
+// }
 
 // Changes title to Completed, clears choices and displays score
 // Sets current question and score to zero and creates input fields
