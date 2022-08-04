@@ -48,11 +48,43 @@ var initials = "";
 var clearResponse = false;
 var clearResponseCode = 0;
 var correct = false;
+var curAnswer = 0;
+var curChoice = 0;
 
 // Begin function- view scores button and the start button for the quiz
 function begin() {
     start.addEventListener("click", questionLoop);
-    prevScores.addEventListener("click", displayScores);
+    //TODO!! display prev scores
+    //prevScores.addEventListener("click", displayScores);
+}
+
+mainSection.addEventListener("click",checkAnswer )
+
+function checkAnswer(event){
+    if(event.target.matches(".answers")){
+        if(questionList[curQuestionIndex - 1].answer===event.target.textContent)
+        {
+            correct = true;
+            response.textContent = "Correct";
+            response.setAttribute("style", "color: green");
+            score += 10;
+            questionLoop()
+        } else {
+            correct = false;
+            response.textContent = "Incorrect";
+            response.setAttribute("style", "color: red");
+            timer.setAttribute("style", "color: red");
+            setTimeout(function () {
+                timer.setAttribute("style", "color: black");
+            },1000);
+            questionLoop()
+
+            //keep track of score off of timer, 
+            timeLeft = timeLeft-10
+            //store time left
+        }
+    }
+
 }
 
 //shows the questions and the choices in a loop
@@ -62,37 +94,40 @@ function questionLoop () {
     start.setAttribute("style", "display: none");
     mainBody.setAttribute("style", "display: none");
     
-  
-    while (curQuestionIndex < questionList.length) {
+        //loading current question with question, choices and answers
         // get current question object from array
             var curQuestion = questionList[curQuestionIndex];
+            if (!curQuestion){
+                return
+                //TODO!!endgame function to input intials and score
+            }
         // update title with current question
             var heading = document.getElementById("heading");
             heading.textContent = curQuestion.title;
 
             var choiceIndex = 0
-           // while (choiceIndex < questionList[curQuestionIndex].choice.length) {
+            for(var i=0; i<mainSection.children.length;i++){
+                mainSection.children[i].style.display = "none"
+            }
+        // displays current choices and save the answer to the variable
             while (choiceIndex < curQuestion.choice.length) {
                 var choiceList = document.createElement("button");
-                //var curChoice = questionList[curQuestionIndex].choice;
-                var curChoice = curQuestion.choice;
-                var curAnswer = curQuestion.answer;
+                choiceList.setAttribute("class", "answers");
+                curChoice = curQuestion.choice;
+                curAnswer = curQuestion.answer;
                
                 choiceList.textContent = curChoice[choiceIndex];
 
                 mainSection.appendChild(choiceList);
                 
                 choiceIndex = choiceIndex + 1;
-
                 }
+
+            //initilize current choice and current question before next iteration
+            curChoice = 0
+            curQuestion = 0
+
             curQuestionIndex = curQuestionIndex  + 1;
-            
-            choiceList.addEventListener("click", validateAns());
-            //nextQuestion();
-            //validateAns();
-            var curChoice = 0
-            var curQuestion = 0
-        }
     }
 
 // Timer Countdown and end the quiz if time is zero
@@ -100,33 +135,20 @@ function runTimer () {
     var timeInterval = setInterval(function() {
         timeLeft--;
         timer.textContent = 'Time: ' + timeLeft;
-        if(timeLeft === 0) {
+        if(timeLeft <= 2) {
             clearInterval(timeInterval);
-            if(heading.textContent !== "All Done.") {
+            if(heading.textContent !== "Completed.") {
                 endOfQuiz();
             }
         }
     }, 1000)
 }
 
-// verifys if at the last question
-// then goes to either next question or end the quiz
-//function nextQuestion(event) {
-function validateAns(event) {
-    writeResponse(event);
-    if(curQuestionIndex < questionList.length) {
-         changeQuestion();
-     } else {
-        endOfQuiz();
-    }
-}
-
 // Checks if at the first question 
 // if not, checks response from the previous question is correct
-function writeResponse(event) {
+    function writeResponse(event) {
     if(event !== undefined) {
-        if(event.currentTarget.textContent === curAnswer) {
-        //if(event.currentTarget.textContent === questionList[curQuestion - 1].response) {
+        if(event.currentTarget.textContent === questionList[curQuestionIndex - 1].answer) {
             correct = true;
             response.textContent = "Correct";
             response.setAttribute("style", "color: green");
@@ -158,28 +180,15 @@ function clearResponse() {
         }, 3000);
     }
 }
-
-// Changes the question
-// Changes the choices
-// function changeQuestion() {
-//     //heading.textContent = questionList[curQuestion].question;
-//     for(var i = 0; i < questionList[curQuestion].length; i++) {
-//         choiceList[i].textContent = choiceList[curChoice].choice[i];        
-//         //choiceList[i].addEventListener("click", nextQuestion);
-//         choiceList[i].addEventListener("click", validateAns);
-//     }
-//     curQuestion++;
-// }
-
 // Changes title to Completed, clears choices and displays score
 // Sets current question and score to zero and creates input fields
 function endOfQuiz() {
     heading.textContent = "Completed.";
-    timeLeft = 1;
+    timeLeft = 2;
     clearChoices();
     clearResponse();
     mainBody.setAttribute("style", "display: visible");
-    mainBody.textContent = 'Your final score is: ' +  score;
+    mainBody.textContent = 'Your final score is: ' +  timeLeft;
     inputDataElements();
 }
 
@@ -192,6 +201,7 @@ function clearChoices() {
 }
 
 // stops entry field from refreshing the page
+//TO DO make input feild to enter scores
 function stopRefresh(event) {
     if(event.key === "Enter") {
         event.preventDefault();
